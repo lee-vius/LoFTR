@@ -16,11 +16,12 @@ class LoFTR(nn.Module):
         self.config = config
 
         # Modules
-        self.backbone = build_backbone(config)
+        self.backbone = build_backbone(config) # 这里的骨架网络用的是 ResNet+FPN 输出的是1/2和1/8分辨率的特征层（根据需求可以改）
+        # positionEncoding是一个恒定的网络层
         self.pos_encoding = PositionEncodingSine(
             config['coarse']['d_model'],
             temp_bug_fix=config['coarse']['temp_bug_fix'])
-        self.loftr_coarse = LocalFeatureTransformer(config['coarse'])
+        self.loftr_coarse = LocalFeatureTransformer(config['coarse']) # 对局部特征进行transformer的模块
         self.coarse_matching = CoarseMatching(config['match_coarse'])
         self.fine_preprocess = FinePreprocess(config)
         self.loftr_fine = LocalFeatureTransformer(config["fine"])

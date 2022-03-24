@@ -92,7 +92,7 @@ if __name__ == '__main__':
         raise RuntimeError("GPU is required to run this demo.")
 
     # Initialize LoFTR
-    matcher = LoFTR(config=default_cfg)
+    matcher = LoFTR(config=default_cfg) # 这里的default config是预先设计好的参数等，包括各个部分的网络参数
     matcher.load_state_dict(torch.load(opt.weight)['state_dict'])
     matcher = matcher.eval().to(device=device)
 

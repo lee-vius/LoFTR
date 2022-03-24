@@ -57,7 +57,7 @@ class ResNetFPN_8_2(nn.Module):
         self.in_planes = initial_dim
 
         # Networks
-        self.conv1 = nn.Conv2d(1, initial_dim, kernel_size=7, stride=2, padding=3, bias=False)
+        self.conv1 = nn.Conv2d(1, initial_dim, kernel_size=7, stride=2, padding=3, bias=False) # 先把灰度图像卷成指定维度
         self.bn1 = nn.BatchNorm2d(initial_dim)
         self.relu = nn.ReLU(inplace=True)
 

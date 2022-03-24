@@ -4,7 +4,7 @@ import torch.nn as nn
 from .linear_attention import LinearAttention, FullAttention
 
 
-class LoFTREncoderLayer(nn.Module):
+class LoFTREncoderLayer(nn.Module): # TODO：这块之后再研究一下，搞清楚transformer的构造
     def __init__(self,
                  d_model,
                  nhead,
@@ -69,6 +69,7 @@ class LocalFeatureTransformer(nn.Module):
         self.nhead = config['nhead']
         self.layer_names = config['layer_names']
         encoder_layer = LoFTREncoderLayer(config['d_model'], config['nhead'], config['attention'])
+        # 这里添加了多个encoder layer，分别对应 self 和 cross
         self.layers = nn.ModuleList([copy.deepcopy(encoder_layer) for _ in range(len(self.layer_names))])
         self._reset_parameters()
 
@@ -89,9 +90,11 @@ class LocalFeatureTransformer(nn.Module):
         assert self.d_model == feat0.size(2), "the feature number of src and transformer must be equal"
 
         for layer, name in zip(self.layers, self.layer_names):
+            # 如果是self，传入transformer的时候key和query都是自身
             if name == 'self':
                 feat0 = layer(feat0, feat0, mask0, mask0)
                 feat1 = layer(feat1, feat1, mask1, mask1)
+            # 如果是cross，传入transformer的时候两个feature互为key和query
             elif name == 'cross':
                 feat0 = layer(feat0, feat1, mask0, mask1)
                 feat1 = layer(feat1, feat0, mask1, mask0)
